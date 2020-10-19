@@ -6,17 +6,10 @@
     <title>Emscripten-Generated Code</title>
   </head>
   <body>
-    <hr/>
-    <div class="emscripten_border">
-      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
-    </div>
-    <hr/>
-    <textarea class="emscripten" id="output" rows="8"></textarea>
-    <hr/>
     <script type='text/javascript'>
       var Module = {
-        preRun: [],
-        postRun: [],
+        preRun: [function() {console.log("pre run 1")}, function() {console.log("pre run 2")}],
+        postRun: [function() {console.log("post run 1")}, function() {console.log("post run 2")}],
         print: (function() {
           var element = document.getElementById('output');
           if (element) element.value = ''; // clear browser cache
@@ -38,16 +31,6 @@
           if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
           console.error(text);
         },
-        canvas: (function() {
-          var canvas = document.getElementById('canvas');
-
-          // As a default initial behavior, pop up an alert when webgl context is lost. To make your
-          // application robust, you may want to override this behavior before shipping!
-          // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
-          canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
-
-          return canvas;
-        })(),
         setStatus: function(text) {
           if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
           if (text === Module.setStatus.last.text) return;
@@ -66,7 +49,6 @@
       Module.setStatus('Downloading...');
       window.onerror = function() {
         Module.setStatus('Exception thrown, see JavaScript console');
-        spinnerElement.style.display = 'none';
         Module.setStatus = function(text) {
           if (text) Module.printErr('[post-exception status] ' + text);
         };
