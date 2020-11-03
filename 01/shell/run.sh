@@ -1,3 +1,3 @@
 #!/usr/bin/bash
 
-emrun --browser firefox new_shell.html
+emrun --browser firefox shell-test.html
