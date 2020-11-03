@@ -345,12 +345,6 @@ int main(int, char**) {
             if (e.type == SDL_QUIT) {
                 quit = true;
             }
-            if (e.type == SDL_KEYDOWN) {
-                quit = true;
-            }
-            if (e.type == SDL_MOUSEBUTTONDOWN) {
-                quit = true;
-            }
         }
         game_loop();
     }
