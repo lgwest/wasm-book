@@ -118,7 +118,6 @@ void move() {
 
     Asteroid* asteroid;
     std::vector<Asteroid*>::iterator it;
-    int i = 0;
     for( it = asteroid_list.begin(); it != asteroid_list.end(); it++ ) {
         asteroid = *it;
         if( asteroid->m_Active ) {
@@ -279,7 +278,7 @@ void game_loop() {
     render();
 }
 
-int main() {
+int main(int, char**) {
     SDL_Init( SDL_INIT_VIDEO );
 
     int return_val = SDL_CreateWindowAndRenderer( CANVAS_WIDTH, CANVAS_HEIGHT, 0, &window, &renderer );
@@ -329,7 +328,20 @@ int main() {
     } 
     projectile_pool = new ProjectilePool();
 
+#if 0
     emscripten_set_main_loop(game_loop, 0, 0);
-
+#else
+//    SDL_Event e;
+//    bool quit = false;
+//    while(!quit) {
+//        while (SDL_PollEvent(&e)) {
+//            if (e.type == SDL_QUIT) {
+//                quit = true;
+//            }
+//        }
+    while(true) {
+        game_loop();
+    }
+#endif
     return 1;
 }

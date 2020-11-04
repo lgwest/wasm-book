@@ -1,13 +1,13 @@
 #include "game.hpp"
-
-#define STAR_SPRITE_FILE "/sprites/rotating-star.png"
-#define FLARE_FILE (char*)"/sprites/flare.png"
+#include "current_dir.h"
+#define STAR_SPRITE_FILE CURRENT_DIR"/sprites/rotating-star.png"
+#define FLARE_FILE (char*) CURRENT_DIR"/sprites/flare.png"
 
 Star::Star()  : Collider(32.0) {
     SDL_Surface *temp_surface = IMG_Load( STAR_SPRITE_FILE );
     
     if( !temp_surface ) {
-        printf("failed to load image: %s\n", IMG_GetError() );
+        printf("[I] failed to load image: %s\n", IMG_GetError() );
         return;
     }
     else { 
@@ -17,7 +17,7 @@ Star::Star()  : Collider(32.0) {
     m_SpriteTexture = SDL_CreateTextureFromSurface( renderer, temp_surface );
 
     if( !m_SpriteTexture ) {
-        printf("failed to create texture: %s\n", IMG_GetError() );
+        printf("[I] failed to create texture: %s\n", IMG_GetError() );
         return;
     }
     else { 

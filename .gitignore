@@ -1,3 +1,4 @@
 build/
 cmake-build-debug/
-
+current_dir.h
+*.bak

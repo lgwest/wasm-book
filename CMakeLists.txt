@@ -34,6 +34,7 @@ include_directories(include)
 #add_subdirectory(Lesson6)
 
 add_subdirectory(11-sdl/1-locked-on-camera)
+add_subdirectory(11-sdl/2-advanced-camera)
 
 #if (NOT ${PROJECT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
 #	file(COPY "${PROJECT_SOURCE_DIR}/res" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

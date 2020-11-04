@@ -26,14 +26,14 @@ PlayerShip::PlayerShip() {
 
 
     if( !temp_surface ) {
-        printf("failed to load image: %s\n", IMG_GetError() );
+        printf("[E] failed to load image: %s\n", IMG_GetError() );
         return;
     }
 
     m_SpriteTexture = SDL_CreateTextureFromSurface( renderer, temp_surface );
 
     if( !m_SpriteTexture ) {
-        printf("failed to create texture: %s\n", IMG_GetError() );
+        printf("[E] failed to create texture: %s\n", IMG_GetError() );
         return;
     }
 

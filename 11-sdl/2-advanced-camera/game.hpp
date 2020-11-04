@@ -3,13 +3,14 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <emscripten.h>
+//#include <emscripten.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
 #include <string>
 #include <vector>
 #include <cstdlib>
+#include "current_dir.h"
 
 #define DEG_TO_RAD(deg) ((float)deg/180.0)*3.14159
 #define RAD_TO_DEG(rad) ((float)rad*180.0)/3.14159
@@ -432,8 +433,8 @@ class Ship : public Collider {
 
 class PlayerShip: public Ship {
     private: 
-        const char* c_SpriteFile = "sprites/FranchiseExp.png";
-        const char* c_ShieldSpriteFile = "/sprites/shield-franchise.png";
+        const char* c_SpriteFile = CURRENT_DIR"sprites/FranchiseExp.png";
+        const char* c_ShieldSpriteFile = CURRENT_DIR"/sprites/shield-franchise.png";
 
     public:
 
@@ -443,8 +444,8 @@ class PlayerShip: public Ship {
 
 class EnemyShip: public Ship {
     public:
-        const char* c_SpriteFile = "/sprites/BirdOfAngerExp.png";
-        const char* c_ShieldSpriteFile = "/sprites/shield-bird.png";
+        const char* c_SpriteFile = CURRENT_DIR"/sprites/BirdOfAngerExp.png";
+        const char* c_ShieldSpriteFile = CURRENT_DIR"/sprites/shield-bird.png";
         const int c_AIStateTime = 2000;
 
         int m_AIStateTTL;
@@ -498,7 +499,7 @@ class FiniteStateMachine {
 
 class Projectile: public Collider {
     public:
-        const char* c_SpriteFile = "sprites/ProjectileExp.png";
+        const char* c_SpriteFile = CURRENT_DIR"sprites/ProjectileExp.png";
         const int c_Width = 16;
         const int c_Height = 16;
         SDL_Texture *m_SpriteTexture;

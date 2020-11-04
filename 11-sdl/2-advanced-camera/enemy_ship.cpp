@@ -34,7 +34,7 @@ EnemyShip::EnemyShip() {
     SDL_Surface *temp_surface = IMG_Load( c_SpriteFile );
     
     if( !temp_surface ) {
-        printf("failed to load image: %s\n", IMG_GetError() );
+        printf("[C] failed to load image: %s\n", IMG_GetError() );
         return;
     }
     else { 

@@ -1,5 +1,5 @@
 #include "game.hpp"
-
+#include "current_dir.h"
 Ship::Ship() : Collider(8.0) {
     m_Rotation = PI;
 
@@ -7,7 +7,7 @@ Ship::Ship() : Collider(8.0) {
 
     m_Accelerating = false;
 
-    m_Exhaust = new Emitter((char*)"/sprites/ProjectileExpOrange.png", 200, 
+    m_Exhaust = new Emitter((char*)CURRENT_DIR"/sprites/ProjectileExpOrange.png", 200,
                     -10, 10,
                     400, 1.0, true,
                     0.1, 0.1,
@@ -26,7 +26,7 @@ Ship::Ship() : Collider(8.0) {
     m_Exhaust->m_y_adjustment = 10;
     m_Exhaust->m_Active = false;
 
-    m_Explode = new Emitter((char*)"/sprites/Explode.png", 100, 
+    m_Explode = new Emitter((char*)CURRENT_DIR"/sprites/Explode.png", 100,
                     0, 360,
                     1000, 0.3, false,
                     20.0, 40.0,

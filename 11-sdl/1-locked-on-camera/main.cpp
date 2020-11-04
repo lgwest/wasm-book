@@ -338,14 +338,15 @@ int main(int, char**) {
 #if 0
     emscripten_set_main_loop(game_loop, 0, 0);
 #else
-    SDL_Event e;
-    bool quit = false;
-    while(!quit) {
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT) {
-                quit = true;
-            }
-        }
+//    SDL_Event e;
+//    bool quit = false;
+//    while(!quit) {
+//        while (SDL_PollEvent(&e)) {
+//            if (e.type == SDL_QUIT) {
+//                quit = true;
+//            }
+//        }
+    while(true)
         game_loop();
     }
 #endif

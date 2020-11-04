@@ -1,4 +1,4 @@
-project(11-1-locked-on-camera)
+project(11-2-advanced-camera)
 
 configure_file(${CONFIG_DIR}/current_dir.h.in ${CMAKE_CURRENT_SOURCE_DIR}/current_dir.h)
 
@@ -8,7 +8,7 @@ include_directories(${SDL2_TTF_INCLUDE_DIR})
 find_package(SDL2_IMAGE REQUIRED)
 include_directories(${SDL2_IMAGE_INCLUDE_DIR})
 
-add_executable(11-1-locked-on-camera 
+add_executable(11-2-advanced-camera
 asteroid.cpp
 camera.cpp
 collider.cpp
@@ -31,7 +31,7 @@ star.cpp
 vector.cpp
 )
 
-target_link_libraries(11-1-locked-on-camera ${SDL2_LIBRARY} ${SDL2_TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY})
+target_link_libraries(11-2-advanced-camera ${SDL2_LIBRARY} ${SDL2_TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY})
 #install(TARGETS Lesson6 RUNTIME DESTINATION ${BIN_DIR})
 #file(COPY "${PROJECT_SOURCE_DIR}/sprites" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
