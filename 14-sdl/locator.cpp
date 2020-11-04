@@ -1,5 +1,5 @@
 #include "game.hpp"
-#define LOCATOR_SPRITE_FILE (char*)"/sprites/locator.png"
+#define LOCATOR_SPRITE_FILE (char*)"sprites/locator.png"
 
 Locator::Locator() {
     SDL_Surface *temp_surface = IMG_Load( LOCATOR_SPRITE_FILE );

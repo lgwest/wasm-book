@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <emscripten.h>
+//#include <emscripten.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
@@ -24,11 +24,13 @@
 #define LEVEL_WIDTH CANVAS_WIDTH*4
 #define LEVEL_HEIGHT CANVAS_HEIGHT*4
 
-#define ENEMY_LASER (char*)"/audio/enemy-laser.wav"
-#define PLAYER_LASER (char*)"/audio/player-laser.wav"
-#define LARGE_EXPLOSION (char*)"/audio/large-explosion.wav"
-#define SMALL_EXPLOSION (char*)"/audio/small-explosion.wav"
-#define HIT (char*)"/audio/hit.wav"
+#define ENEMY_LASER (char*)"audio/enemy-laser.wav"
+#define PLAYER_LASER (char*)"audio/player-laser.wav"
+#define LARGE_EXPLOSION (char*)"audio/large-explosion.wav"
+#define SMALL_EXPLOSION (char*)"audio/small-explosion.wav"
+#define HIT (char*)"audio/hit.wav"
+
+#define STAR_MASS 9999999
 
 extern Uint32 last_time;
 extern Uint32 last_frame_time;
@@ -69,12 +71,56 @@ class FiniteStateMachine;
 class Camera;
 class RenderManager;
 class Locator;
+class UIButton;
 
 enum FSM_STATE {
     APPROACH = 0,
     ATTACK = 1,
     FLEE = 2,
     WANDER = 3
+};
+
+enum SCREEN_STATE {
+    START_SCREEN = 0,
+    PLAY_SCREEN = 1,
+    PLAY_TRANSITION = 2,
+    GAME_OVER_SCREEN = 3,
+    YOU_WIN_SCREEN = 4
+};
+
+class UISprite {
+    public:
+        bool m_Active;
+        SDL_Texture *m_SpriteTexture;
+        SDL_Rect m_dest = {.x = 0, .y = 0, .w = 128, .h = 32 };
+
+        UISprite( int x, int y, char* file_name );
+        void RenderUI();
+};
+
+class UIButton {
+    public:
+        bool m_Hover;
+        bool m_Click;
+        bool m_Active;
+
+        void (*m_Callback)();
+        
+        SDL_Texture *m_SpriteTexture;
+        SDL_Rect m_dest = {.x = 0, .y = 0, .w = 128, .h = 32 };
+
+        SDL_Texture *m_ClickTexture;
+        SDL_Texture *m_HoverTexture;
+
+        UIButton( int x, int y, 
+                    char* file_name, char* hover_file_name, char* click_file_name,
+                    void (*callback)() );
+
+        void MouseClick(int x, int y);
+        void MouseUp(int x, int y);
+        void MouseMove( int x, int y );
+        void KeyDown( SDL_Keycode key );
+        void RenderUI();
 };
 
 class Audio {
@@ -153,9 +199,13 @@ class RenderManager {
         SDL_Texture *m_BackgroundTexture;
         SDL_Rect m_BackgroundDest = {.x = 0, .y = 0, .w = c_BackgroundWidth, .h = c_BackgroundHeight };
 
+        SDL_Texture *m_StartBackgroundTexture;
+
         RenderManager();
 
         void RenderBackground();
+        void RenderStartBackground(int alpha = 255);
+        
 
         void Render( SDL_Texture *tex, SDL_Rect *src, SDL_Rect *dest, float rad_rotation = 0.0,
                         int alpha = 255, int red = 255, int green = 255, int blue = 255 );
@@ -333,6 +383,12 @@ class Collider {
         Vector2D m_TempPoint;
         bool CCHitTest( Collider* collider );
 
+        void ElasticCollision( Collider* collider );
+        float m_Mass;
+        // these were previously in the other classes
+        Vector2D m_Direction;
+        Vector2D m_Velocity;
+
         Vector2D m_Position;
 
         float m_Radius;
@@ -377,9 +433,6 @@ class Asteroid : public Collider {
         Uint32 m_CurrentFrame = 0;
         int m_NextFrameTime;
         float m_Rotation;
-
-        Vector2D m_Direction;
-        Vector2D m_Velocity;
         
         Emitter* m_Explode;
         Emitter* m_Chunks;
@@ -395,6 +448,8 @@ class Asteroid : public Collider {
 
 class Star : public Collider {
     public:
+        const float c_MaxGravityDistSQ = 250000.0; // 300 squared
+
         SDL_Texture *m_SpriteTexture;
         SDL_Rect m_src = {.x = 0, .y = 0, .w = 64, .h = 64 };
         SDL_Rect m_dest = {.x = 0, .y = 0, .w = 64, .h = 64 };
@@ -408,6 +463,8 @@ class Star : public Collider {
                     
         void Move();
         void Render();
+
+        void ShipGravity( Ship* s );
 };
 
 
@@ -434,9 +491,6 @@ class Ship : public Collider {
         int m_NextFrameTime;
         float m_Rotation;
 
-        Vector2D m_Direction;
-        Vector2D m_Velocity;
-
         void RotateLeft();
         void RotateRight();
         void Accelerate();
@@ -452,7 +506,7 @@ class Ship : public Collider {
 class PlayerShip: public Ship {
     private: 
         const char* c_SpriteFile = "sprites/FranchiseExp.png";
-        const char* c_ShieldSpriteFile = "/sprites/shield-franchise.png";
+        const char* c_ShieldSpriteFile = "sprites/shield-franchise.png";
 
     public:
 
@@ -462,8 +516,8 @@ class PlayerShip: public Ship {
 
 class EnemyShip: public Ship {
     public:
-        const char* c_SpriteFile = "/sprites/BirdOfAngerExp.png";
-        const char* c_ShieldSpriteFile = "/sprites/shield-bird.png";
+        const char* c_SpriteFile = "sprites/BirdOfAngerExp.png";
+        const char* c_ShieldSpriteFile = "sprites/shield-bird.png";
         const int c_AIStateTime = 2000;
 
         int m_AIStateTTL;
@@ -529,8 +583,6 @@ class Projectile: public Collider {
         const float c_AliveTime = 2000;
         float m_TTL;
 
-        Vector2D m_Velocity;
-
         Projectile();
         void Move();
         void Render();
@@ -549,6 +601,9 @@ class ProjectilePool {
         bool CollisionCheck();
 };
 
+extern UISprite *you_win_sprite;
+extern UISprite *game_over_sprite;
+
 extern PlayerShip* player;
 extern EnemyShip* enemy;
 extern Camera* camera;
@@ -557,6 +612,8 @@ extern Locator* locator;
 
 extern ProjectilePool* projectile_pool;
 extern std::vector<Asteroid*> asteroid_list; 
+
+extern UIButton* play_btn;
 
 extern Star* star;
 

@@ -18,10 +18,15 @@ Audio* hit_snd;
 ProjectilePool* projectile_pool;
 std::vector<Asteroid*> asteroid_list; 
 
+UIButton* play_btn;
+UIButton* play_again_btn;
+
 Uint32 last_time;
 Uint32 last_frame_time;
 Uint32 current_time;
 Uint32 ms_per_frame = 100; // animate at 10 fps
+int transition_time = 0;
+bool you_win = false;
 
 SDL_Window *window;
 SDL_Renderer *renderer;
@@ -30,7 +35,12 @@ SDL_Rect dest = {.x = 160, .y = 100, .w = 16, .h = 16 };
 
 SDL_Texture *sprite_texture;
 
+UISprite *you_win_sprite;
+UISprite *game_over_sprite;
+
 SDL_Event event;
+
+SCREEN_STATE current_screen = START_SCREEN;
 
 bool left_key_down = false;
 bool right_key_down = false;
@@ -59,7 +69,129 @@ float get_random_float( float min, float max ) {
     return (float)int_rand / 1000.0;
 }
 
-void input() {
+void start_input() {
+    if(SDL_PollEvent( &event ) ) 
+	{
+		switch (event.type) 
+		{
+            case SDL_MOUSEMOTION:
+			{
+                int x_val = 0; 
+                int y_val = 0;  
+                SDL_GetMouseState( &x_val, &y_val );
+                play_btn->MouseMove(x_val, y_val);
+            }
+            case SDL_MOUSEBUTTONDOWN:
+			{
+				switch (event.button.button)
+				{
+					case SDL_BUTTON_LEFT:
+					{
+                        int x_val = 0; 
+                        int y_val = 0;  
+                        SDL_GetMouseState( &x_val, &y_val );
+
+                        play_btn->MouseClick(x_val, y_val);
+						break;
+					}
+					default:
+					{
+						break;
+					}
+				}
+				break;
+			}
+            case SDL_MOUSEBUTTONUP:
+			{
+				switch (event.button.button)
+				{
+					case SDL_BUTTON_LEFT:
+					{
+                        int x_val = 0; 
+                        int y_val = 0;  
+                        SDL_GetMouseState( &x_val, &y_val );
+
+                        play_btn->MouseUp(x_val, y_val);
+						break;
+					}
+					default:
+					{
+						break;
+					}
+				}
+				break;
+			}
+            case SDL_KEYDOWN:
+            {
+                play_btn->KeyDown( event.key.keysym.sym );
+            }
+        }
+    }
+}
+
+void end_input() {
+    if(SDL_PollEvent( &event ) ) 
+	{
+		switch (event.type) 
+		{
+            case SDL_MOUSEMOTION:
+			{
+                int x_val = 0; 
+                int y_val = 0;  
+                SDL_GetMouseState( &x_val, &y_val );
+                play_again_btn->MouseMove(x_val, y_val);
+            }
+            case SDL_MOUSEBUTTONDOWN:
+			{
+				switch (event.button.button)
+				{
+					case SDL_BUTTON_LEFT:
+					{
+                        int x_val = 0; 
+                        int y_val = 0;  
+                        SDL_GetMouseState( &x_val, &y_val );
+
+                        play_again_btn->MouseClick(x_val, y_val);
+						break;
+					}
+					default:
+					{
+						break;
+					}
+				}
+				break;
+			}
+            case SDL_MOUSEBUTTONUP:
+			{
+				switch (event.button.button)
+				{
+					case SDL_BUTTON_LEFT:
+					{
+                        int x_val = 0; 
+                        int y_val = 0;  
+                        SDL_GetMouseState( &x_val, &y_val );
+
+                        play_again_btn->MouseUp(x_val, y_val);
+						break;
+					}
+					default:
+					{
+						break;
+					}
+				}
+				break;
+			}
+            case SDL_KEYDOWN:
+            {
+                printf("SDL_KEYDOWN\n");
+                play_again_btn->KeyDown( event.key.keysym.sym );
+            }
+        }
+    }
+}
+
+
+void play_input() {
      if( SDL_PollEvent( &event ) ){
         switch( event.type ){
             case SDL_KEYDOWN:
@@ -138,7 +270,12 @@ void move() {
     locator->Move();
 }
 
-void render() {
+void start_render() {
+    render_manager->RenderStartBackground();
+    play_btn->RenderUI();
+}
+
+void play_render() {
     render_manager->RenderBackground();
 
     player->Render();
@@ -170,6 +307,7 @@ void collisions() {
         player->m_NextFrameTime = ms_per_frame;
 
         player->m_Explode->Run(); // added 
+        current_screen = GAME_OVER_SCREEN;
         large_explosion_snd->Play();
 
     }
@@ -178,6 +316,7 @@ void collisions() {
         enemy->m_CurrentFrame = 1;
         enemy->m_NextFrameTime = ms_per_frame;
 
+        current_screen = YOU_WIN_SCREEN;
         enemy->m_Explode->Run(); // added 
         large_explosion_snd->Play();
     }
@@ -193,6 +332,7 @@ void collisions() {
                 asteroid = *ita;
                 if( asteroid->m_Active ) {
                     if( asteroid->HitTest( projectile ) ) {
+                        asteroid->ElasticCollision( projectile );
                         projectile->m_CurrentFrame = 1;
                         projectile->m_NextFrameTime = ms_per_frame;
                         small_explosion_snd->Play();
@@ -214,11 +354,13 @@ void collisions() {
                     player->m_CurrentFrame = 1;
                     player->m_NextFrameTime = ms_per_frame;
                     
+                    current_screen = GAME_OVER_SCREEN;
                     player->m_Explode->Run(); 
                     large_explosion_snd->Play();
                 }
                 else {
                     hit_snd->Play();
+                    player->ElasticCollision( projectile );
                 }
 
                 projectile->m_CurrentFrame = 1;
@@ -232,10 +374,13 @@ void collisions() {
                     enemy->m_CurrentFrame = 1;
                     enemy->m_NextFrameTime = ms_per_frame;
 
+                    current_screen = YOU_WIN_SCREEN;
                     enemy->m_Explode->Run(); 
                     large_explosion_snd->Play();
+                    enemy->m_Shield->m_ttl -= 1000;
                 }
                 else {
+                    enemy->ElasticCollision( projectile );
                     hit_snd->Play();
                 }
                 projectile->m_CurrentFrame = 1;
@@ -265,10 +410,11 @@ void collisions() {
                     player->m_NextFrameTime = ms_per_frame;
                     
                     player->m_Explode->Run(); 
+                    current_screen = GAME_OVER_SCREEN;
                     large_explosion_snd->Play();
                 }
                 else {
-                    asteroid->Explode();
+                    player->ElasticCollision( asteroid );
                     small_explosion_snd->Play();
                 }
         }
@@ -281,15 +427,49 @@ void collisions() {
                     enemy->m_NextFrameTime = ms_per_frame;
                     
                     enemy->m_Explode->Run();
+                    current_screen = YOU_WIN_SCREEN;
                     large_explosion_snd->Play();
                 }
                 else {
-                    asteroid->Explode();
+                    enemy->ElasticCollision( asteroid );
                     small_explosion_snd->Play();
                 }
         }
     }
 
+    Asteroid* asteroid_1;
+    Asteroid* asteroid_2;
+
+    std::vector<Asteroid*>::iterator ita_1;
+    std::vector<Asteroid*>::iterator ita_2;
+
+    for( ita_1 = asteroid_list.begin(); ita_1 != asteroid_list.end(); ita_1++ ) {
+        asteroid_1 = *ita_1;
+        if( !asteroid_1->m_Active ) {
+            continue;
+        }
+
+        for( ita_2 = ita_1+1; ita_2 != asteroid_list.end(); ita_2++ ) {
+            asteroid_2 = *ita_2;
+            if( !asteroid_2->m_Active ) {
+                continue;
+            }
+
+            if( asteroid_1->HitTest( asteroid_2 ) ) {
+                asteroid_1->ElasticCollision( asteroid_2 );
+            }
+        }
+    }
+}
+
+void draw_play_transition() {
+    transition_time -= diff_time;
+
+    if( transition_time <= 0 ) {
+        current_screen = PLAY_SCREEN;
+        return;
+    }
+    render_manager->RenderStartBackground(transition_time/4);
 }
 
 void game_loop() {
@@ -299,13 +479,53 @@ void game_loop() {
     delta_time = diff_time / 1000.0;
     last_time = current_time;
 
-    input();
-    move();
-    collisions();
-    render();
+    if( current_screen == START_SCREEN ) {
+        start_input();
+        start_render();
+    }
+    else if( current_screen == PLAY_SCREEN  || current_screen == PLAY_TRANSITION ) {
+        play_input();
+        move();
+        collisions();
+        play_render();
+
+        if( current_screen == PLAY_TRANSITION ) {
+            draw_play_transition();
+        }
+    }
+    else if( current_screen == GAME_OVER_SCREEN ) {
+        end_input();
+        move();
+        collisions();
+        play_render();
+
+        game_over_sprite->RenderUI();
+        play_again_btn->RenderUI();
+    }
+    else if( current_screen == YOU_WIN_SCREEN ) {
+        end_input();
+        move();
+        collisions();
+        play_render();
+
+        you_win_sprite->RenderUI();
+        play_again_btn->RenderUI();
+    }
 }
 
-int main() {
+void play_click() {
+    current_screen = PLAY_TRANSITION;
+    transition_time = 1020;
+}
+
+void play_again_click() {
+    printf("main::play_again_click()  line %d\n", __LINE__);
+//  EM_ASM(
+//    location.reload();
+//  );
+}
+
+int main(int, char**) {
     SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO );
 
     int return_val = SDL_CreateWindowAndRenderer( CANVAS_WIDTH, CANVAS_HEIGHT, 0, &window, &renderer );
@@ -317,6 +537,11 @@ int main() {
 
     SDL_SetRenderDrawColor( renderer, 0, 0, 0, 255 );
     SDL_RenderClear( renderer );
+
+    game_over_sprite = new UISprite( 400, 300, (char*)"sprites/GameOver.png" );
+    game_over_sprite->m_Active = true;
+    you_win_sprite   = new UISprite( 400, 300, (char*)"sprites/YouWin.png" );
+    you_win_sprite->m_Active = true;
 
     last_frame_time = last_time = SDL_GetTicks();
 
@@ -368,7 +593,24 @@ int main() {
     } 
     projectile_pool = new ProjectilePool();
 
-    emscripten_set_main_loop(game_loop, 0, 0);
+    play_btn = new UIButton(400, 500, 
+                    (char*)"sprites/play_button.png",
+                    (char*)"sprites/play_button_hover.png",
+                    (char*)"sprites/play_button_click.png",
+                    play_click );
 
+    play_again_btn = new UIButton(400, 500, 
+                    (char*)"sprites/play_again_button.png",
+                    (char*)"sprites/play_again_button_hover.png",
+                    (char*)"sprites/play_again_button_click.png",
+                    play_again_click );
+
+#if 0
+    emscripten_set_main_loop(game_loop, 0, 0);
+#else
+    while(true) {
+        game_loop();
+    }
+#endif
     return 1;
 }

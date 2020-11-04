@@ -1,7 +1,7 @@
 #include "game.hpp"
 
-#define STAR_SPRITE_FILE "/sprites/rotating-star.png"
-#define FLARE_FILE (char*)"/sprites/flare.png"
+#define STAR_SPRITE_FILE "sprites/rotating-star.png"
+#define FLARE_FILE (char*)"sprites/flare.png"
 
 Star::Star()  : Collider(32.0) {
     SDL_Surface *temp_surface = IMG_Load( STAR_SPRITE_FILE );
@@ -27,6 +27,7 @@ Star::Star()  : Collider(32.0) {
     SDL_FreeSurface( temp_surface );
 
     m_Radius = 36;
+    m_Mass = STAR_MASS;
 
     m_Position.x = LEVEL_WIDTH / 2;
     m_Position.y = LEVEL_HEIGHT / 2;
@@ -110,7 +111,19 @@ Star::Star()  : Collider(32.0) {
     );
 
 }
-                    
+
+void Star::ShipGravity( Ship* s ) {
+    Vector2D dist_vec = m_Position - s->m_Position;
+    float dist_sq = dist_vec.MagSQ();
+
+    if( dist_sq < c_MaxGravityDistSQ ) {
+        float force = (c_MaxGravityDistSQ / dist_sq) * delta_time;
+        dist_vec.Normalize();
+        dist_vec *= force;
+        s->m_Velocity += dist_vec;
+    }
+}
+
 void Star::Move() {
     m_NextFrameTime -= diff_time;
 
@@ -121,6 +134,9 @@ void Star::Move() {
             m_CurrentFrame = 0;
         }
     }
+
+    ShipGravity( player );
+    ShipGravity( enemy );
 }
 
 void Star::Render() {

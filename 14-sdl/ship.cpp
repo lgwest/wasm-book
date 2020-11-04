@@ -7,7 +7,7 @@ Ship::Ship() : Collider(8.0) {
 
     m_Accelerating = false;
 
-    m_Exhaust = new Emitter((char*)"/sprites/ProjectileExpOrange.png", 200, 
+    m_Exhaust = new Emitter((char*)"sprites/ProjectileExpOrange.png", 200,
                     -10, 10,
                     400, 1.0, true,
                     0.1, 0.1,
@@ -26,7 +26,7 @@ Ship::Ship() : Collider(8.0) {
     m_Exhaust->m_y_adjustment = 10;
     m_Exhaust->m_Active = false;
 
-    m_Explode = new Emitter((char*)"/sprites/Explode.png", 100, 
+    m_Explode = new Emitter((char*)"sprites/Explode.png", 100,
                     0, 360,
                     1000, 0.3, false,
                     20.0, 40.0,
@@ -46,6 +46,7 @@ Ship::Ship() : Collider(8.0) {
     m_Direction.y = 1.0;
 
     m_Active = true;
+    m_Mass = 50.0;
 }
 
 void Ship::RotateLeft() {
@@ -84,12 +85,14 @@ void Ship::Shoot() {
         if( projectile != NULL ) {
             projectile->Launch( m_Position, m_Direction );
             player_laser_snd->Play();
+            m_Velocity -= m_Direction * (projectile->c_Velocity * projectile->m_Mass / m_Mass);
+            CapVelocity();
         }
     }
 }
 
 void Ship::Decelerate() {
-    m_Velocity -= m_Direction * delta_time;
+    m_Velocity -= m_Direction * ((c_MaxVelocity/10)* delta_time);
 
     CapVelocity();
 }

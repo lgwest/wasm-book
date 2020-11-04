@@ -1,6 +1,7 @@
 #include "game.hpp"
 
-#define BACKGROUND_SPRITE_FILE (char*)"/sprites/starfield.png"
+#define BACKGROUND_SPRITE_FILE (char*)"sprites/starfield.png"
+#define START_BACKGROUND_SPRITE_FILE (char*)"sprites/SpaceWarrior.png"
 
 RenderManager::RenderManager() {
     SDL_Surface *temp_surface = IMG_Load( BACKGROUND_SPRITE_FILE );
@@ -18,6 +19,35 @@ RenderManager::RenderManager() {
     }
 
     SDL_FreeSurface( temp_surface );
+
+    temp_surface = IMG_Load( START_BACKGROUND_SPRITE_FILE );
+    
+    if( !temp_surface ) {
+        printf("failed to load image: %s\n", IMG_GetError() );
+        return;
+    }
+
+    m_StartBackgroundTexture = SDL_CreateTextureFromSurface( renderer, temp_surface );
+
+    if( !m_StartBackgroundTexture ) {
+        printf("failed to create texture: %s\n", IMG_GetError() );
+        return;
+    }
+
+    SDL_FreeSurface( temp_surface );
+}
+
+void RenderManager::RenderStartBackground( int alpha ) {
+    if( alpha == 255 ) {
+        SDL_SetRenderDrawColor( renderer, 0, 0, 0, 255);
+        SDL_RenderClear( renderer );
+    }
+
+    SDL_SetTextureAlphaMod(m_StartBackgroundTexture,
+                            (Uint8)alpha );
+
+    SDL_Rect background_rect = {.x = 0, .y=0, .w=CANVAS_WIDTH, .h=CANVAS_HEIGHT};
+    SDL_RenderCopy( renderer, m_StartBackgroundTexture, NULL, &background_rect );
 }
 
 void RenderManager::RenderBackground() {

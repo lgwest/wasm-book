@@ -20,6 +20,7 @@ Projectile::Projectile(): Collider(4.0) {
 
     SDL_FreeSurface( temp_surface );
 
+    m_Mass = 1.0;
 }
 
 void Projectile::Move() {

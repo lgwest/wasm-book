@@ -120,6 +120,33 @@ bool Collider::SteeringRectTest( Vector2D &start_point, Vector2D &end_point ) {
     return true;
 }
 
+//float m_Mass;
+void Collider::ElasticCollision( Collider* collider ) {
+    if( collider->m_Mass == STAR_MASS || m_Mass == STAR_MASS ) {
+        return;
+    }
+
+    // The first thing we do is separate the colliders
+    Vector2D sepration_vec = collider->m_Position - m_Position;
+    
+    // a more accurate separation would be to push both objects by half the sum of the radii, but we will
+    // simplify by pushing the other collider
+    sepration_vec.Normalize();
+    sepration_vec *= collider->m_Radius + m_Radius;
+
+    collider->m_Position = m_Position + sepration_vec;
+
+    // now that we have separated the colliders, calculate the new velocities
+    Vector2D old_v1 = m_Velocity;
+    Vector2D old_v2 = collider->m_Velocity;
+
+    m_Velocity = old_v1 * ((m_Mass - collider->m_Mass)/(m_Mass + collider->m_Mass)) +
+                 old_v2 * ((2 * collider->m_Mass) / (m_Mass + collider->m_Mass));
+
+    collider->m_Velocity = old_v1 * ((2 * collider->m_Mass)/(m_Mass + collider->m_Mass)) + 
+                           old_v2 * ((collider->m_Mass - m_Mass)/(m_Mass + collider->m_Mass));
+}
+
 void Collider::WrapPosition() {
     if( m_Position.x > LEVEL_WIDTH ) {
         m_Position.x -= LEVEL_WIDTH; 
