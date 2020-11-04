@@ -9,7 +9,7 @@ Asteroid::Asteroid( float x, float y,
     SDL_Surface *temp_surface = IMG_Load( ADSTEROID_SPRITE_FILE );
     
     if( !temp_surface ) {
-        printf("failed to load image: %s\n", IMG_GetError() );
+        printf("[A] failed to load image: %s\n", IMG_GetError() );
         return;
     }
     else { 

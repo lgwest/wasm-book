@@ -10,14 +10,14 @@ Shield::Shield( Ship* ship, const char* sprite_string ) : Collider(12.0) {
     SDL_Surface *temp_surface = IMG_Load( sprite_string );
 
     if( !temp_surface ) {
-        printf("failed to load image: %s\n", IMG_GetError() );
+        printf("[H] failed to load image: %s\n", IMG_GetError() );
         return;
     }
 
     m_SpriteTexture = SDL_CreateTextureFromSurface( renderer, temp_surface );
 
     if( !m_SpriteTexture ) {
-        printf("failed to create texture: %s\n", IMG_GetError() );
+        printf("[H] failed to create texture: %s\n", IMG_GetError() );
         return;
     }
 

@@ -5,7 +5,7 @@
 RenderManager::RenderManager() {
     SDL_Surface *temp_surface = IMG_Load( BACKGROUND_SPRITE_FILE );
     if( !temp_surface ) {
-        printf("failed to load image: %s\n", IMG_GetError() );
+        printf("[G] failed to load image: %s\n", IMG_GetError() );
         return;
     }
 
@@ -13,7 +13,7 @@ RenderManager::RenderManager() {
     temp_surface );
 
     if( !m_BackgroundTexture ) {
-        printf("failed to create texture: %s\n", IMG_GetError() );
+        printf("[G] failed to create texture: %s\n", IMG_GetError() );
         return;
     }
     SDL_FreeSurface( temp_surface );

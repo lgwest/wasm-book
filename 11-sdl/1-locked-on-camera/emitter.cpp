@@ -31,8 +31,8 @@ Emitter::Emitter(char* sprite_file, int max_particles, float min_angle, float ma
     SDL_Surface *temp_surface = IMG_Load( sprite_file );
     
     if( !temp_surface ) {
-        printf("failed to load image: %s\n", IMG_GetError() );
-        printf("failed sprite file: %s\n", sprite_file );
+        printf("[B] failed to load image: %s\n", IMG_GetError() );
+        printf("[B] failed sprite file: %s\n", sprite_file );
         return;
     }
 
