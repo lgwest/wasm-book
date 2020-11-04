@@ -338,7 +338,7 @@ void game_loop() {
     render();
 }
 
-int main() {
+int main(int, char**) {
     SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO );
 
     int return_val = SDL_CreateWindowAndRenderer( CANVAS_WIDTH, CANVAS_HEIGHT, 0, &window, &renderer );
@@ -401,7 +401,12 @@ int main() {
     } 
     projectile_pool = new ProjectilePool();
 
+#if 0
     emscripten_set_main_loop(game_loop, 0, 0);
-
+#else
+    while(true) {
+        game_loop();
+    }
+#endif
     return 1;
 }

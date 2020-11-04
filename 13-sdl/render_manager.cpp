@@ -1,6 +1,6 @@
 #include "game.hpp"
 
-#define BACKGROUND_SPRITE_FILE (char*)"/sprites/starfield.png"
+#define BACKGROUND_SPRITE_FILE (char*)"sprites/starfield.png"
 
 RenderManager::RenderManager() {
     SDL_Surface *temp_surface = IMG_Load( BACKGROUND_SPRITE_FILE );

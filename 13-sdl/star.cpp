@@ -1,7 +1,7 @@
 #include "game.hpp"
 
-#define STAR_SPRITE_FILE "/sprites/rotating-star.png"
-#define FLARE_FILE (char*)"/sprites/flare.png"
+#define STAR_SPRITE_FILE "sprites/rotating-star.png"
+#define FLARE_FILE (char*)"sprites/flare.png"
 
 Star::Star()  : Collider(32.0) {
     SDL_Surface *temp_surface = IMG_Load( STAR_SPRITE_FILE );

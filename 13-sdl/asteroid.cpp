@@ -1,5 +1,5 @@
 #include "game.hpp"
-#define ADSTEROID_SPRITE_FILE (char*)"/sprites/asteroid.png"
+#define ADSTEROID_SPRITE_FILE (char*)"sprites/asteroid.png"
 
 Asteroid::Asteroid( float x, float y, 
                     float velocity, 
@@ -27,7 +27,7 @@ Asteroid::Asteroid( float x, float y,
 
     SDL_FreeSurface( temp_surface );
 
-    m_Explode = new Emitter((char*)"/sprites/Explode.png", 
+    m_Explode = new Emitter((char*)"sprites/Explode.png",
                     100, 0, 360,        // int max_particles, float min_angle, float max_angle,
                     1000, 0.3, false,   // Uint32 particle_lifetime, float acceleration, bool alpha_fade,
                     20.0, 40.0,         // float min_starting_velocity, float max_starting_velocity,
@@ -44,7 +44,7 @@ Asteroid::Asteroid( float x, float y,
     m_Explode->m_parent_y_ptr = &(m_Position.y);
     m_Explode->m_Active = false;
 
-    m_Chunks = new Emitter((char*)"/sprites/small-asteroid.png", 
+    m_Chunks = new Emitter((char*)"sprites/small-asteroid.png",
                     40, 0, 360,             // int max_particles, float min_angle, float max_angle,
                     1000, 0.05, false,      // Uint32 particle_lifetime, float acceleration, bool alpha_fade,
                     80.0, 150.0,            // float min_starting_velocity, float max_starting_velocity,

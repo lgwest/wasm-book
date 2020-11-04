@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <emscripten.h>
+//#include <emscripten.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
@@ -24,11 +24,11 @@
 #define LEVEL_WIDTH CANVAS_WIDTH*4
 #define LEVEL_HEIGHT CANVAS_HEIGHT*4
 
-#define ENEMY_LASER (char*)"/audio/enemy-laser.wav"
-#define PLAYER_LASER (char*)"/audio/player-laser.wav"
-#define LARGE_EXPLOSION (char*)"/audio/large-explosion.wav"
-#define SMALL_EXPLOSION (char*)"/audio/small-explosion.wav"
-#define HIT (char*)"/audio/hit.wav"
+#define ENEMY_LASER (char*)"audio/enemy-laser.wav"
+#define PLAYER_LASER (char*)"audio/player-laser.wav"
+#define LARGE_EXPLOSION (char*)"audio/large-explosion.wav"
+#define SMALL_EXPLOSION (char*)"audio/small-explosion.wav"
+#define HIT (char*)"audio/hit.wav"
 
 #define STAR_MASS 9999999
 
@@ -458,7 +458,7 @@ class Ship : public Collider {
 class PlayerShip: public Ship {
     private: 
         const char* c_SpriteFile = "sprites/FranchiseExp.png";
-        const char* c_ShieldSpriteFile = "/sprites/shield-franchise.png";
+        const char* c_ShieldSpriteFile = "sprites/shield-franchise.png";
 
     public:
 
@@ -468,8 +468,8 @@ class PlayerShip: public Ship {
 
 class EnemyShip: public Ship {
     public:
-        const char* c_SpriteFile = "/sprites/BirdOfAngerExp.png";
-        const char* c_ShieldSpriteFile = "/sprites/shield-bird.png";
+        const char* c_SpriteFile = "sprites/BirdOfAngerExp.png";
+        const char* c_ShieldSpriteFile = "sprites/shield-bird.png";
         const int c_AIStateTime = 2000;
 
         int m_AIStateTTL;
